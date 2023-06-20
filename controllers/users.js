@@ -23,11 +23,12 @@ const getUserById = (req, res) => {
       return res.status(200).send(user);
     })
     .catch((err) => {
-      if (err.name === "ValidationError") {
+      if (err.name === "CastError") {
         return res.status(400).send({
           message: "Переданы некорректные данные при поиске пользователя.",
         });
       }
+      console.log(err.name);
       return res.status(500).send({ message: "Ошибка сервера" });
     });
 };

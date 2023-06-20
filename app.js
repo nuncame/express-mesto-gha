@@ -26,7 +26,7 @@ app.use((req, res, next) => {
 
 app.use(routes);
 
-app.get("/*", (req, res) => {
+app.use("/*", (req, res) => {
   return res
           .status(404)
           .send({ message: "Указанная страница не существует." });
