@@ -1,7 +1,7 @@
 const User = require("../models/user");
 
 const getUsers = (req, res) => {
-  User.find({})
+  return User.find({})
     .then((data) => {
       return res.status(200).send(data);
     })
@@ -12,7 +12,7 @@ const getUsers = (req, res) => {
 
 const getUserById = (req, res) => {
   const { userId } = req.params;
-  User.findById(userId)
+  return User.findById(userId)
     .then((user) => {
       if (!user) {
         return res
@@ -28,7 +28,7 @@ const getUserById = (req, res) => {
 
 const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar })
+  return User.create({ name, about, avatar })
     .then((user) => {
       return res.status(201).send(user);
     })
@@ -71,7 +71,7 @@ const updateUserData = (req, res) => {
 };
 
 const updateUserAvatar = (req, res) => {
-  User.findByIdAndUpdate(
+  return User.findByIdAndUpdate(
     req.user._id,
     { avatar: req.body.avatar },
     {
