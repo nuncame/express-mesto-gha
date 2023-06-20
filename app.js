@@ -24,11 +24,13 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get("/", (req, res) => {
-  res.send("Hoorah");
-});
-
 app.use(routes);
+
+app.get("/*", (req, res) => {
+  return res
+          .status(404)
+          .send({ message: "Указанная страница не существует." });
+});
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
