@@ -38,12 +38,20 @@ const deleteCard = (req, res) => {
       }
       return res.status(200).send(card);
     })
-    .catch((err) => res.status(500).send({ message: "Ошибка сервера" }));
+    .catch((err) => {
+      if (err.name === "ValidationError") {
+        return res.status(400).send({
+          message: "Переданы некорректные данные карточки.",
+        });
+      }
+      return res.status(500).send({ message: "Ошибка сервера" });
+    });
 };
 
 const likeCard = (req, res) => {
+  const { cardId } = req.params;
   Card.findByIdAndUpdate(
-    req.params.cardId,
+    cardId,
     { $addToSet: { likes: req.user._id } },
     { new: true }
   )
@@ -61,13 +69,14 @@ const likeCard = (req, res) => {
           message: "Переданы некорректные данные для изменения статуса лайка.",
         });
       }
-      return res.status(500).send({ message: "Ошибка сервера" });
+      return res.status(500).send({ message: "Ошибка сервера", err });
     });
 };
 
 const dislikeCard = (req, res) => {
+  const { cardId } = req.params;
   Card.findByIdAndUpdate(
-    req.params.cardId,
+    cardId,
     { $pull: { likes: req.user._id } },
     { new: true }
   )

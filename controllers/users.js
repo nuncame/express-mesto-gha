@@ -14,6 +14,7 @@ const getUserById = (req, res) => {
   const { userId } = req.params;
   return User.findById(userId)
     .then((user) => {
+      console.log(user);
       if (!user) {
         return res
           .status(404)
@@ -21,7 +22,12 @@ const getUserById = (req, res) => {
       }
       return res.status(200).send(user);
     })
-    .catch(() => {
+    .catch((err) => {
+      if (err.name === "ValidationError") {
+        return res.status(400).send({
+          message: "Переданы некорректные данные при поиске пользователя.",
+        });
+      }
       return res.status(500).send({ message: "Ошибка сервера" });
     });
 };
