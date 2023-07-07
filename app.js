@@ -18,13 +18,13 @@ mongoose
 const app = express();
 app.use(express.json());
 
-app.post('/register', celebrate({
+app.post('/signup', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required().min(3),
   }).unknown(true),
 }), createUser);
-app.post('/login', celebrate({
+app.post('/signin', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required().min(3),
