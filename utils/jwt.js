@@ -3,7 +3,8 @@ const jwt = require('jsonwebtoken');
 const JWT_SECRET = 'super-secret-key';
 
 const createToken = (id) => {
-  return jwt.sign({ id }, JWT_SECRET, { expiresIn: '7d' });
+  const token = jwt.sign({ id }, JWT_SECRET, { expiresIn: '7d' });
+  return { token };
 };
 
 const verifyToken = (token) => {
