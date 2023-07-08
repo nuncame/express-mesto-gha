@@ -14,7 +14,7 @@ const createUser = (req, res, next) => {
     .hash(password, 10)
     .then((hash) => {
       return User.create({
-        name, about, avatar, email, password: hash,
+        name, about, avatar, email,
       });
     })
     .then((user) => { return res.status(201).send(user); })
