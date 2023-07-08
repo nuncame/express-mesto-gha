@@ -30,11 +30,6 @@ app.post('/signin', celebrate({
     password: Joi.string().required().min(3),
   }).unknown(true),
 }), login);
-app.use('/*', (req, res) => {
-  return res
-    .status(404)
-    .send({ message: 'Указанная страница не существует.' });
-});
 
 app.use(authorize);
 app.use(routes);
