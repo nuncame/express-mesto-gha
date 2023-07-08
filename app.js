@@ -1,9 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const { celebrate, Joi, errors } = require('celebrate');
 const routes = require('./routes/index');
 const { createUser, login } = require('./controllers/users');
 const authorize = require('./middlewares/auth');
-const { celebrate, Joi, errors } = require('celebrate');
 
 const { PORT = 3000 } = process.env;
 
@@ -30,9 +30,13 @@ app.post('/signin', celebrate({
     password: Joi.string().required().min(3),
   }).unknown(true),
 }), login);
+app.use('/*', (req, res) => {
+  return res
+    .status(404)
+    .send({ message: 'Указанная страница не существует.' });
+});
 
 app.use(authorize);
-
 app.use(routes);
 
 app.use('/*', (req, res) => {

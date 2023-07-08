@@ -35,11 +35,11 @@ const login = (req, res, next) => {
   return User.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        next(new ForbiddenError('Такого пользователя не существует'));
+        next(new ForbiddenError('Неправильные почта или пароль'));
       }
       bcrypt.compare(password, user.password, (err, passwordMatch) => {
         if (!passwordMatch) {
-          next(new ForbiddenError('Введен неправильный пароль'));
+          next(new ForbiddenError('Неправильные почта или пароль'));
         }
         const token = createToken(user._id);
         return res.status(200).send(token);
