@@ -2,7 +2,6 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 const { createToken } = require('../utils/jwt');
 const BadRequestError = require('../errors/bad-request-err');
-// const ForbiddenError = require('../errors/forbidden-err');
 const NotFoundError = require('../errors/not-found-err');
 const ConflictError = require('../errors/conflict-err');
 const UnauthorizedError = require('../errors/unathorized-err');
@@ -33,7 +32,7 @@ const createUser = (req, res, next) => {
 const login = (req, res, next) => {
   const { email, password } = req.body;
 
-  return User.findOne({ email }).select('+password')
+  return User.findOne({ email })
     .then((user) => {
       if (!user) {
         next(new UnauthorizedError('Неправильные почта или пароль'));
