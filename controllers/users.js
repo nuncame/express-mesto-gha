@@ -14,10 +14,16 @@ const createUser = (req, res, next) => {
     .hash(password, 10)
     .then((hash) => {
       return User.create({
-        name, about, avatar, email,
+        name, about, avatar, email, password: hash,
       });
     })
-    .then((user) => { return res.status(201).send(user); })
+    .then((user) => {
+      return res
+        .status(201)
+        .send({
+          name: user.name, about: user.about, avatar: user.avatar, email: user.email, _id: user._id,
+        });
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные при создании пользователя.'));
