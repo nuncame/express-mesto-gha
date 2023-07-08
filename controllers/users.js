@@ -2,9 +2,10 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 const { createToken } = require('../utils/jwt');
 const BadRequestError = require('../errors/bad-request-err');
-const ForbiddenError = require('../errors/forbidden-err');
+// const ForbiddenError = require('../errors/forbidden-err');
 const NotFoundError = require('../errors/not-found-err');
 const ConflictError = require('../errors/conflict-err');
+const UnauthorizedError = require('../errors/unathorized-err');
 
 const createUser = (req, res, next) => {
   const {
@@ -35,11 +36,11 @@ const login = (req, res, next) => {
   return User.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        next(new BadRequestError('Неправильные почта или пароль'));
+        next(new UnauthorizedError('Неправильные почта или пароль'));
       }
       bcrypt.compare(password, user.password, (err, passwordMatch) => {
         if (!passwordMatch) {
-          next(new BadRequestError('Неправильные почта или пароль'));
+          next(new UnauthorizedError('Неправильные почта или пароль'));
         }
         const token = createToken(user._id);
         return res.status(200).send(token);
@@ -56,8 +57,8 @@ const getUsers = (req, res, next) => {
 };
 
 const getCurrentUser = (req, res, next) => {
-  const currentUser = req.user.id;
-  return User.findById(currentUser._id)
+  const currentUser = req.user.id.toString();
+  return User.findById(currentUser)
     .then((user) => {
       return res.status(200).send(user);
     })
@@ -65,7 +66,7 @@ const getCurrentUser = (req, res, next) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Переданы некорректные данные при поиске пользователя.'));
       }
-      return res.status(500).send({ message: 'Ошибка сервера' });
+      next(err);
     });
 };
 
