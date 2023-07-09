@@ -16,16 +16,16 @@ const createCard = (req, res, next) => {
     .then((card) => { return res.status(201).send(card); })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные при создании карточки'));
+        return next(new BadRequestError('Переданы некорректные данные при создании карточки'));
       }
-      next(err);
+      return next(err);
     });
 };
 
 const deleteCard = (req, res, next) => {
   const { cardId } = req.params;
   const currentUser = req.user.id;
-  Card.findByIdAndDelete(cardId)
+  Card.findById(cardId)
     .then((card) => {
       if (!card) {
         throw new NotFoundError('Карточка с указанным id не найдена.');
@@ -33,14 +33,18 @@ const deleteCard = (req, res, next) => {
       if (currentUser !== card.owner.toHexString()) {
         throw new ForbiddenError('Нет доступа.');
       }
-      return res.status(200).send(card);
+      Card.findOneAndDelete({ _id: card._id })
+        .then((deletedCard) => {
+          return res.status(200).send(deletedCard);
+        })
+        .catch((err) => {
+          if (err.name === 'CastError') {
+            return next(new BadRequestError('Переданы некорректные данные карточки'));
+          }
+          return next(err);
+        });
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new BadRequestError('Переданы некорректные данные карточки'));
-      }
-      next(err);
-    });
+    .catch(next);
 };
 
 const likeCard = (req, res, next) => {
@@ -58,9 +62,9 @@ const likeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError('Переданы некорректные данные для изменения статуса лайка.'));
+        return next(new BadRequestError('Переданы некорректные данные для изменения статуса лайка.'));
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -79,9 +83,9 @@ const dislikeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError('Переданы некорректные данные для изменения статуса лайка.'));
+        return next(new BadRequestError('Переданы некорректные данные для изменения статуса лайка.'));
       }
-      next(err);
+      return next(err);
     });
 };
 
